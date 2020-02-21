@@ -1,3 +1,7 @@
+==
+[![GoDoc](https://godoc.org/github.com/crspybits/action-times?status.svg)](https://godoc.org/github.com/crspybits/action-times)
+[![Go Report Card](https://goreportcard.com/badge/crspybits/action-times)](https://goreportcard.com/report/crspybits/action-times) [test coverage](https://gocover.io/github.com/crspybits/action-times)
+
 # action-times
 Coding test for JumpCloud
 
