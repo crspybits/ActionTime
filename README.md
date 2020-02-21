@@ -1,2 +1,2 @@
-# ActionTime
+# action-times
 Coding test for JumpCloud
