@@ -7,6 +7,14 @@ import "fmt"
 
 // I'm assuming test cases are run sequentially, top to bottom.
 
+func add_action(t *testing.T, s string) {
+  err := AddAction(s)
+  if err != nil {
+    errorString := fmt.Sprintf("%#v", err)
+    t.Error("Error adding action: " + s + "; " + errorString)
+  }
+}
+
 func TestAddActionFailures(t *testing.T) {
     testData := []string{
       `foo`,
@@ -19,19 +27,19 @@ func TestAddActionFailures(t *testing.T) {
     }
 
     for _, data := range testData {
-      result := AddAction(data)
-      if result == nil {
+      err := AddAction(data)
+      if err == nil {
         t.Error("Expected json parsing failure: " + data)
       }
     }
 }
 
-func checkAction(t *testing.T, results []ActionTime, name string, expectedValue float32) {
+func check_action(t *testing.T, results []OutputAction, name string, expectedValue float32) {
   for  _, result := range results {
-    if *result.Action == name {
-      if *result.Time != expectedValue {
+    if result.Action == name {
+      if result.Avg != expectedValue {
         t.Error("Action with name: " + name + " did not have expected value: " + fmt.Sprintf("%f", expectedValue) +
-          "; actual value was: " + fmt.Sprintf("%f", *result.Time))
+          "; actual value was: " + fmt.Sprintf("%f", result.Avg))
       }
       return
     }
@@ -41,24 +49,24 @@ func checkAction(t *testing.T, results []ActionTime, name string, expectedValue 
 }
 
 func TestMultipleDifferentAddActionSuccess(t *testing.T) {
-    AddAction(`{"action":"jump", "time":100}`)
-    AddAction(`{"action":"jump", "time":200}`)
-    AddAction(`{"action":"run", "time":75}`)
-    AddAction(`{"action":"bling", "time":800}`)
+    add_action(t, `{"action":"jump", "time":100}`)
+    add_action(t, `{"action":"jump", "time":200}`)
+    add_action(t, `{"action":"run", "time":75}`)
+    add_action(t, `{"action":"bling", "time":800}`)
 
     s := GetStats()
     // fmt.Print("json: " + s + "\n")
 
-    var data []ActionTime
+    var data []OutputAction
 
     err := json.Unmarshal([]byte(s), &data)
     if err != nil {
       t.Error("Failure parsing json string results: " + s)
     }
 
-    checkAction(t, data, "jump", 150)
-    checkAction(t, data, "run", 75)
-    checkAction(t, data, "bling", 800)
+    check_action(t, data, "jump", 150)
+    check_action(t, data, "run", 75)
+    check_action(t, data, "bling", 800)
 }
 
 func TestMultipleSameAddActionSuccess(t *testing.T) {
@@ -75,36 +83,36 @@ func TestMultipleSameAddActionSuccess(t *testing.T) {
     action := "jump"
 
     for _,v := range times {
-      AddAction("{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", v) + "}")
+      add_action(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", v) + "}")
     }
 
     s := GetStats()
     // fmt.Print("json: " + s + "\n")
 
-    var data []ActionTime
+    var data []OutputAction
 
     err := json.Unmarshal([]byte(s), &data)
     if err != nil {
       t.Error("Failure parsing json string results: " + s)
     }
 
-    checkAction(t, data, "jump", average)
+    check_action(t, data, "jump", average)
 }
 
 func workerMethod(t *testing.T, action string, expectedValue float32) {
-  AddAction("{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", expectedValue) + "}")
+  add_action(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", expectedValue) + "}")
 
   s := GetStats()
   // fmt.Print("json: " + s + "\n")
 
-  var data []ActionTime
+  var data []OutputAction
 
   err := json.Unmarshal([]byte(s), &data)
   if err != nil {
     t.Error("Failure parsing json string results: " + s)
   }
 
-  checkAction(t, data, action, expectedValue)
+  check_action(t, data, action, expectedValue)
 }
 
 func worker(t *testing.T, action string, expectedValue float32) {
