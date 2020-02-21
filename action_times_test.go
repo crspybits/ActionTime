@@ -5,8 +5,6 @@ import "encoding/json"
 import "time"
 import "fmt"
 
-// I'm assuming test cases are run sequentially, top to bottom.
-
 func add_action(t *testing.T, s string) {
   err := AddAction(s)
   if err != nil {
@@ -34,6 +32,14 @@ func TestAddActionFailures(t *testing.T) {
     }
 }
 
+func get_stats(t *testing.T) string {
+  s := GetStats()
+  if s == "" {
+    t.Error("Error calling GetStats")
+  }
+  return s
+}
+
 func check_action(t *testing.T, results []OutputAction, name string, expectedValue float32) {
   for  _, result := range results {
     if result.Action == name {
@@ -52,7 +58,7 @@ func TestSpecificKeyNamesAddActionSuccess(t *testing.T) {
   Reset()
 
   add_action(t, `{"action":"run", "time":100}`)
-  s := GetStats()
+  s := get_stats(t)
   expectedResult := `[{"action":"run","avg":100}]`
   if s != expectedResult {
     t.Error("Did not get expected key/values: " + s)
@@ -67,7 +73,7 @@ func TestMultipleDifferentAddActionSuccess(t *testing.T) {
     add_action(t, `{"action":"run", "time":75}`)
     add_action(t, `{"action":"bling", "time":800}`)
 
-    s := GetStats()
+    s := get_stats(t)
     // fmt.Print("json: " + s + "\n")
 
     var data []OutputAction
@@ -99,7 +105,7 @@ func TestMultipleSameAddActionSuccess(t *testing.T) {
       add_action(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", v) + "}")
     }
 
-    s := GetStats()
+    s := get_stats(t)
     // fmt.Print("json: " + s + "\n")
 
     var data []OutputAction
@@ -115,7 +121,7 @@ func TestMultipleSameAddActionSuccess(t *testing.T) {
 func workerMethod(t *testing.T, action string, expectedValue float32) {
   add_action(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", expectedValue) + "}")
 
-  s := GetStats()
+  s := get_stats(t)
   // fmt.Print("json: " + s + "\n")
 
   var data []OutputAction

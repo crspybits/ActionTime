@@ -75,6 +75,9 @@ func AddAction(s string) error {
   return nil // no error
 }
 
+// Returns a possibly emmpty JSON array with elements of the form:
+//   {"action":"jump", "avg":150}
+// giving the average time for each action that has been provided to the AddAction function
 // Returns an empty string if there was an error.
 func GetStats() string {
   var results = []OutputAction{}
@@ -102,6 +105,7 @@ func GetStats() string {
   return string(bytes)
 }
 
+// Resets averages stored in the library.
 // This was not in the requirements but was needed for testing. It may also
 // be useful in a practical application.
 func Reset() {
