@@ -1,6 +1,9 @@
 # action-times
 Coding test for JumpCloud
 
+## go version
+Developed and tested with `go version go1.12.5 darwin/amd64`
+
 
 ## Example usage in a `main.go`:
 
@@ -24,3 +27,7 @@ Put this in a file named main.go, and do:
 1) go get -d github.com/crspybits/action-times
 2) go run main.go
 
+## Testing
+With this package installed in a directory named `action-times` under `src` in your $GOPATH:
+1) Change to that directory
+2) Run `go test`
