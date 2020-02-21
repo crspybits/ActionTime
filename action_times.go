@@ -16,9 +16,8 @@ type inputaction struct {
 
 // An action name and average duration used in JSON in output data.
 type OutputAction struct {
-  // names of fields must be those as given as they reflect keys in JSON output.
-  Action string // action name
-  Avg float32 // average action duration
+  Action string `json:"action"` // action name
+  Avg float32 `json:"avg"` // average action duration
 }
 
 // I'm going to track an incremental running average for each action.

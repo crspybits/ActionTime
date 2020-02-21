@@ -48,7 +48,20 @@ func check_action(t *testing.T, results []OutputAction, name string, expectedVal
   t.Error("No action with name: " + name)
 }
 
+func TestSpecificKeyNamesAddActionSuccess(t *testing.T) {
+  Reset()
+
+  add_action(t, `{"action":"run", "time":100}`)
+  s := GetStats()
+  expectedResult := `[{"action":"run","avg":100}]`
+  if s != expectedResult {
+    t.Error("Did not get expected key/values: " + s)
+  }
+}
+
 func TestMultipleDifferentAddActionSuccess(t *testing.T) {
+    Reset()
+
     add_action(t, `{"action":"jump", "time":100}`)
     add_action(t, `{"action":"jump", "time":200}`)
     add_action(t, `{"action":"run", "time":75}`)
