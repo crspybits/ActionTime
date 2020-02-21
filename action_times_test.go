@@ -5,7 +5,7 @@ import "encoding/json"
 import "time"
 import "fmt"
 
-func add_action(t *testing.T, s string) {
+func addAction(t *testing.T, s string) {
   err := AddAction(s)
   if err != nil {
     errorString := fmt.Sprintf("%#v", err)
@@ -32,7 +32,7 @@ func TestAddActionFailures(t *testing.T) {
     }
 }
 
-func get_stats(t *testing.T) string {
+func getStats(t *testing.T) string {
   s := GetStats()
   if s == "" {
     t.Error("Error calling GetStats")
@@ -40,7 +40,7 @@ func get_stats(t *testing.T) string {
   return s
 }
 
-func check_action(t *testing.T, results []OutputAction, name string, expectedValue float32) {
+func checkAction(t *testing.T, results []OutputAction, name string, expectedValue float32) {
   for  _, result := range results {
     if result.Action == name {
       if result.Avg != expectedValue {
@@ -57,8 +57,8 @@ func check_action(t *testing.T, results []OutputAction, name string, expectedVal
 func TestSpecificKeyNamesAddActionSuccess(t *testing.T) {
   Reset()
 
-  add_action(t, `{"action":"run", "time":100}`)
-  s := get_stats(t)
+  addAction(t, `{"action":"run", "time":100}`)
+  s := getStats(t)
   expectedResult := `[{"action":"run","avg":100}]`
   if s != expectedResult {
     t.Error("Did not get expected key/values: " + s)
@@ -68,12 +68,12 @@ func TestSpecificKeyNamesAddActionSuccess(t *testing.T) {
 func TestMultipleDifferentAddActionSuccess(t *testing.T) {
     Reset()
 
-    add_action(t, `{"action":"jump", "time":100}`)
-    add_action(t, `{"action":"jump", "time":200}`)
-    add_action(t, `{"action":"run", "time":75}`)
-    add_action(t, `{"action":"bling", "time":800}`)
+    addAction(t, `{"action":"jump", "time":100}`)
+    addAction(t, `{"action":"jump", "time":200}`)
+    addAction(t, `{"action":"run", "time":75}`)
+    addAction(t, `{"action":"bling", "time":800}`)
 
-    s := get_stats(t)
+    s := getStats(t)
     // fmt.Print("json: " + s + "\n")
 
     var data []OutputAction
@@ -83,9 +83,9 @@ func TestMultipleDifferentAddActionSuccess(t *testing.T) {
       t.Error("Failure parsing json string results: " + s)
     }
 
-    check_action(t, data, "jump", 150)
-    check_action(t, data, "run", 75)
-    check_action(t, data, "bling", 800)
+    checkAction(t, data, "jump", 150)
+    checkAction(t, data, "run", 75)
+    checkAction(t, data, "bling", 800)
 }
 
 func TestMultipleSameAddActionSuccess(t *testing.T) {
@@ -102,10 +102,10 @@ func TestMultipleSameAddActionSuccess(t *testing.T) {
     action := "jump"
 
     for _,v := range times {
-      add_action(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", v) + "}")
+      addAction(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", v) + "}")
     }
 
-    s := get_stats(t)
+    s := getStats(t)
     // fmt.Print("json: " + s + "\n")
 
     var data []OutputAction
@@ -115,13 +115,13 @@ func TestMultipleSameAddActionSuccess(t *testing.T) {
       t.Error("Failure parsing json string results: " + s)
     }
 
-    check_action(t, data, "jump", average)
+    checkAction(t, data, "jump", average)
 }
 
 func workerMethod(t *testing.T, action string, expectedValue float32) {
-  add_action(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", expectedValue) + "}")
+  addAction(t, "{\"action\":\"" + action + "\", \"time\":" + fmt.Sprintf("%f", expectedValue) + "}")
 
-  s := get_stats(t)
+  s := getStats(t)
   // fmt.Print("json: " + s + "\n")
 
   var data []OutputAction
@@ -131,7 +131,7 @@ func workerMethod(t *testing.T, action string, expectedValue float32) {
     t.Error("Failure parsing json string results: " + s)
   }
 
-  check_action(t, data, action, expectedValue)
+  checkAction(t, data, action, expectedValue)
 }
 
 func worker(t *testing.T, action string, expectedValue float32) {
